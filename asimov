@@ -17,7 +17,7 @@ set -Eeu -o pipefail
 # @author  Steve Grunwell
 # @license MIT
 
-readonly ASIMOV_ROOT=~
+readonly ASIMOV_ROOTS=(/opt/UnitySrc ~)
 
 # Paths to unconditionally skip over. This prevents Asimov from modifying the
 # Time Machine exclusions for these paths (and decendents). It has an important
@@ -25,6 +25,7 @@ readonly ASIMOV_ROOT=~
 readonly ASIMOV_SKIP_PATHS=(
     ~/.Trash
     ~/Library
+    ~/.vscode
 )
 
 # A list of "directory"/"sentinel" pairs.
@@ -66,6 +67,13 @@ readonly ASIMOV_VENDOR_DIR_SENTINELS=(
     '.build mix.exs'                   # Mix build files (Elixir)
     '.terraform.d .terraformrc'        # Terraform plugin cache
     '.terragrunt-cache terragrunt.hcl' # Terragrunt
+    'artifacts bee.config'
+    'artifacts bee'
+    'artifacts jam'
+    'build bee.config'
+    'build bee'
+    'build jam'
+    'Library Assets'
 )
 
 # Exclude the given paths from Time Machine backups.
@@ -116,6 +124,8 @@ done
 
 printf '\n\033[0;36mFinding dependency directories with corresponding definition files…\033[0m\n'
 
-find "${ASIMOV_ROOT}" \( "${find_parameters_skip[@]}" \) \( -false "${find_parameters_vendor[@]}" \) \
-    | exclude_file \
+for ASIMOV_ROOT in "${ASIMOV_ROOTS[@]}"; do
+    find "${ASIMOV_ROOT}" \( "${find_parameters_skip[@]}" \) \( -false "${find_parameters_vendor[@]}" \) \
+        | exclude_file \
     ;
+done
